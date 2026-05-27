@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import "./App.css";
 import Header from "./components/Header";
-import StudentCard from "./components/StudentCard";
+
 import StudentList from "./components/StudentList";
 
 function App() {
@@ -95,30 +95,57 @@ function App() {
   const averageScore = (red / scoreTotal.length).toFixed(1);
   console.log(`${scoreTotal}, ${red}, ${averageScore}`);
 
-  const handleStudentList = () => {
-    students.filter((student) => student.isActive);
+  const params = new URLSearchParams(window.location.search);
+  const activeStudent = params.get("active");
+  const studentFilteredList =
+    activeStudent == "true"
+      ? students.filter((student) => student.isActive)
+      : students;
+
+  const getGrade = (score) => {
+    score >= 90 && score <= 100
+      ? "A"
+      : score >= 80
+        ? "B"
+        : score >= 70
+          ? "C"
+          : score >= 60
+            ? "D"
+            : score >= 0
+              ? "F"
+              : "Invalid Score";
   };
 
   return (
-    <>
-      <div className="app-container ">
-        <Header students={students} averageScore={averageScore} />
-        <br />
+    <div className=" ">
+      <Header students={students} averageScore={averageScore} />
+      <br />
 
-        <div className="inline-div">
-          <div>
-            <button onClick={handleStudentList}>show Active Only</button>
-          </div>
-
-          <div>
-            <button onClick={!handleStudentList}>Show All</button>
-          </div>
+      <div className="inline-div">
+        <div>
+          <a href="?active=true">
+            <button>show Active Only</button>
+          </a>
         </div>
-        <StudentList title="Student Roster" students={students}>
-          <p>End of student list — {students.length} total</p>
-        </StudentList>
+
+        <div>
+          <a href="/">
+            <button>Show All</button>
+          </a>
+        </div>
       </div>
-    </>
+      <br />
+      <br />
+      {/* <h2>Student Roster</h2> */}
+      <StudentList
+        title="Student Roster"
+        getGrade={getGrade}
+        students={studentFilteredList}
+      >
+        {/* <StudentList title="Show All" getGrade={getGrade} students={students}> */}
+        <p>End of student list — {studentFilteredList.length} total</p>
+      </StudentList>
+    </div>
   );
 }
 
